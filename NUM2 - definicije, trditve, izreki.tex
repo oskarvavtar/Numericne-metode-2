@@ -11,8 +11,19 @@
 	mathescape
 }
 
+\DeclareMathOperator{\dist}{dist}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\p}{\mathbb{P}}
+\newcommand{\A}{\mathcal{A}}
+\newcommand{\B}{\mathcal{B}}
+\newcommand{\C}{\mathcal{C}}
+
 \theoremstyle{definition}
 \newtheorem{definicija}{Definicija}[section]
+
+\theoremstyle{definition}
+\newtheorem{problem}{Problem}[section]
 
 \newtheorem{lema}{Lema}
 \newtheorem{trditev}{Trditev}
@@ -33,5 +44,65 @@ po predavanjih profesorice Marjetke Knez}
 \pagebreak
 \tableofcontents
 \pagebreak
+
+% #################################################################################################
+
+\section{TEORIJA APROKSIMACIJE}
+\vspace{0.5cm}
+
+\begin{definicija}[Aproksimacijska shema]
+
+Z $X$ označimo (realni) vektorski prostor, katerega elemente želimo aproksimirati, $S \subseteq X$ označuje podprostor oz. podmnožico, v kateri iščemo aproksimant. \textit{Aproksimacijska shema} je operator $\A: X \rightarrow S$, ki vsakemu elementu $f \in X$ priredi aproksimacijski element $\tilde{f} = \A f \in S$.
+
+\end{definicija}
+\vspace{0.5cm}
+
+\begin{definicija}[Optimalni aproksimacijski problem]
+
+Naj bo $X$ vektorski prostor z normo $\|.\|$, $S \subseteq X$. Za $f \in X$ iščemo $\tilde{f} \in S$, da je 
+$$\|f - \tilde{f}\| ~=~ \inf_{s \in S}{\|f - s\|} ~=:~ \dist(f, S).$$
+
+\end{definicija}
+\vspace{0.5cm}
+
+\begin{definicija}
+
+Recimo, da je $S = S_n$, kjer je $n$ dimenzija. Zanima nas, ali za $f \in X$ in $\tilde{f_n} \in S_n$ napaka $\|f - \tilde{f_n}\|$ konvergira proti $0$, ko gre $n \rightarrow \infty$. Če je to res, je aproksimacijska shema \textit{konvergentna}.
+
+Če gledamo zaporedje podprostorov $S_n \subset X$, mora veljati, da z večanjem svobodnih parametrov postane $S_n$ gost v $X$. Za polinome to sledi iz Weierstrassovega izreka.
+
+\end{definicija}
+\vspace{0.5cm}
+
+\begin{izrek}[Weierstrassov izrek]
+
+Naj bo $f \in \C([a, b])$ poljubna funkcija. Potem $\forall \varepsilon > 0$ obstaja polinom $p$, da je 
+$$\|f - p\|_{\infty,~[a, b]} ~<~ \varepsilon.$$
+Drugače povedano:
+$$\dist_{\infty}(f, \p_n) ~\xrightarrow{n \rightarrow \infty}~ 0.$$
+
+\end{izrek}
+\vspace{0.5cm}
+
+\begin{definicija}[Bernsteinov polinom]
+
+$$\B_n f(x) ~=~ \sum_{i=0}^n f(\frac{i}{n}) \cdot B_i^n(x),$$
+kjer je $B_i^n$ \textit{Bernsteinov bazni polinom}:
+$$B_i^n(x) ~:=~ \binom{n}{i} x^i (1-x)^{n-1}, ~~~i = 0, 1, \ldots, n$$
+Da se pokazati, da gre $\|f - \B_f\|_{\infty,~[0, 1]} \xrightarrow{n \rightarrow \infty} 0$. Bernsteinov aproksimacijski polinom nam poda en možen način aproksimacije funkcije $f$ (na $[0,1]$).
+
+\end{definicija}
+\vspace{0.5cm}
+
+\begin{definicija}[Bernsteinov aproksimacijski operator]
+~\\
+$\B_n: \C([a, b]) \rightarrow \p_n$, ~$f \mapsto \B_n f$:
+$$\B_n f(x) ~=~ \sum_{i=0}^n f \left( a + \frac{i}{n} (b-a) \right) \cdot B_i^n(\frac{x-a}{b-a})$$
+$$\|f - \B_n f\|_{\infty, ~[a, b]} ~=~ \max_{x \in [a, b]} |f(x) - \B_n f(x)|$$ 
+
+\end{definicija}
+\vspace{0.5cm}
+
+% #################################################################################################
 
 \end{document}
