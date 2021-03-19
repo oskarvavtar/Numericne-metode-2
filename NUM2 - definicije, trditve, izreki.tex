@@ -47,7 +47,7 @@ po predavanjih profesorice Marjetke Knez}
 
 % #################################################################################################
 
-\section{TEORIJA APROKSIMACIJE}
+\section{Teorija aproksimacije}
 \vspace{0.5cm}
 
 \begin{definicija}[Aproksimacijska shema]
@@ -59,7 +59,7 @@ Z $X$ označimo (realni) vektorski prostor, katerega elemente želimo aproksimir
 
 \begin{definicija}[Optimalni aproksimacijski problem]
 
-Naj bo $X$ vektorski prostor z normo $\|.\|$, $S \subseteq X$. Za $f \in X$ iščemo $\tilde{f} \in S$, da je 
+Naj bo $X$ vektorski prostor z normo $\|\bullet\|$, $S \subseteq X$. Za $f \in X$ iščemo $\tilde{f} \in S$, da je 
 $$\|f - \tilde{f}\| ~=~ \inf_{s \in S}{\|f - s\|} ~=:~ \dist(f, S).$$
 
 \end{definicija}
@@ -101,6 +101,137 @@ $$\B_n f(x) ~=~ \sum_{i=0}^n f \left( a + \frac{i}{n} (b-a) \right) \cdot B_i^n(
 $$\|f - \B_n f\|_{\infty, ~[a, b]} ~=~ \max_{x \in [a, b]} |f(x) - \B_n f(x)|$$ 
 
 \end{definicija}
+\vspace{0.5cm}
+
+\pagebreak
+
+% #################################################################################################
+
+\section{Enakomerna aproksimacija \\zveznih funkcij s polinomi}
+\vspace{0.5cm}
+
+\begin{problem}
+
+Za dano $f \in \C([a, b])$ iščemo polinom $p^* \in \p_n$, za katerega velja
+$$\|f - p^*\|_{\infty,~[a, b]} ~=~ \min_{p \in \p_n} \|f - p\|_{\infty,~[a, b]} ~=~ \min_{p \in \p_n} \max_{x \in [a, b]} |f(x) - p(x)|.$$
+Ta problem sodi pod optimalne aproksimacijske probleme. Polinom $p^*$ imenujemo \textit{polinom najboljše enakomerne aproksimacije}\footnote{Od tu naprej \textit{p.n.e.a.}} za $f$ na $[a, b]$. Problem je nelinearen.
+
+\end{problem}
+\vspace{0.5cm}
+
+\begin{izrek}
+
+Naj bo $f \in \C([a, b])$. Če je polinom $p \in \p_n$ takšen, da \textit{residual} $r = f - p$ doseže svojo normo $\|r\|_{\infty,~[a, b]}$ alternirajoče v vsaj $n+2$ točkah $x_i \in [a, b]$, $a \leq x_0 < x_1 < \ldots < x_{n+1} \leq b$, potem je $p$ \textit{p.n.e.a.} za $f$ na $[a, b]$. \\
+
+\textbf{Natančneje:} Če obstaja $n+2$ točk $x_i \in [a, b]$, da je $\|r\|_{\infty, [a, b]} = |r(x_i)|$ za $i = 0, 1, \ldots, n+1$, in $r(x_i) \cdot r(x_{i+1}) < 0$ za $i = 0, 1, \ldots, n$, potem je $p \in \p_n$ \textit{p.n.e.a.} za $f$ na $[a, b]$.
+
+\end{izrek}
+\vspace{0.5cm}
+
+\begin{definicija}
+
+Naj bo $E = \{x_i;~a \leq x_0 < x_1 < \ldots < x_{n+1} \leq b\}$. Definirajmo \textit{minimaks} za $f$ na $E$:
+$$M_n(f, E) ~=~ \min_{p \in \p_n} \max_{x \in E} |f(x) - p(x)|$$
+Polinom, pri katerem je ta minimum dosežen, imenujemo \textit{p.n.e.a.} za $f$ na množici $E$. Dobimo ga tako, da rešimo sistem linearnih enačb:
+$$f(x_i) - p(x_i) ~=~ (-1)^i m, ~~~i = 0, 1, \ldots, n+1$$
+kjer so neznanke koeficienti polinoma $p$ ter število $m$.\footnote{Imamo $n+2$ enačb za $n+2$ neznank.}
+
+\pagebreak
+
+\begin{algoritem}[Remesov postopek]
+
+Vhodni podatki: funkcija $f$, interval $[a, b]$, stopnja $n$, toleranca $\varepsilon$ \\
+
+Ponavljaj $k = 0, 1, 2, \ldots$
+\begin{enumerate}
+	\item Poišči polinom ${p_k}^* \in \p_n$, ki zadošča pogojem
+	$$f(x_i) - {p_k}^*(x_i) ~=~ (-1)^i m, ~~~ i = 0, 1, \ldots, n+2$$
+	
+	\item Poišči ekstrem residuala $r_l = f - {p_k}^*$, torej poišči $u \in [a, b]$, da bo
+	$$|r_k(u)| ~=~ \|r_k\|_{\infty,~[a, b]}$$
+	
+	\item Če je $|r_k(u)| - |m| < \varepsilon$, potem končaj in vrni $p^* = {p_k}^*$. 
+\end{enumerate}
+\end{algoritem}
+\vspace{0.5cm}
+
+\begin{opomba}
+
+Da se dokazati, da zaporedje polinomov, ki ga tvori Remesov postopek konvergira proti \textit{p.n.e.a.} $p^*$. Hitrost konvergence je \textit{linearna}.
+
+\end{opomba}
+\vspace{0.5cm}
+
+\end{definicija}
+\vspace{0.5cm}
+
+\pagebreak
+
+% #################################################################################################
+
+\section{Aproksimacija po metodi najmanjših kvadratov}
+\vspace{0.5cm}
+
+\begin{definicija}
+
+Naj bo $X$ vektorski prostor nad $\R$ s skalarnim produktom $\langle \bullet, \bullet \rangle$, s kvadratno normo $\|\bullet\|_2 = \sqrt{\langle \bullet, \bullet \rangle}$. $S \subseteq X$ je končnodimenzionalen podprostor v $X$, definiran kot
+$$S ~=~ \mathcal{L}\textit{in}\{\varphi_1, \varphi_2, \ldots, \varphi_n\}, ~~~\dim{S} = n.$$
+Za izbran $f \in X$ iščemo $f* \in S$, da velja
+$$\|f - f^*\|_2 ~=~ \min_{s \in S}\|f - s\|_2.$$
+$f^*$ imenujemo \textit{element najboljše aproksimacije po metodi najmanjših kvadratov.}\footnote{\textit{e.n.a. po MNK}}
+
+\end{definicija}
+\vspace{0.5cm}
+
+\begin{izrek}
+
+Naj bo $S \subseteq X.$ Element $f^* \in S$ je element najboljše aproksimacije po MNK za $f \in X$ natanko tedaj, ko je $f - f^* \perp S$.
+
+\end{izrek}
+\vspace{0.5cm}
+
+\begin{posledica}
+
+Iz izreka sledi konstrukcija. Naj bodo $\varphi_1, \varphi_2, \ldots, \varphi_n$ baza podprostora $S$. 
+$$f^* ~=~ \sum_{j=1}^n \alpha_j \varphi_j,$$ 
+$(\alpha_j)_{j=1}^n$ so neznani koeficienti. Veljati mora $f - f^* \perp S$, torej $f - f^* \perp \varphi_i$ $\forall i = 1, 2, \ldots, n$. Na podlagi tega dobimo
+$$\begin{bmatrix}
+\langle \varphi_1, \varphi_2 \rangle & \cdots & \langle \varphi_n, \varphi_1 \rangle \\
+\vdots & \ddots & \vdots \\
+\langle \varphi_1, \varphi_n \rangle & \cdots & \langle \varphi_n, \varphi \rangle
+\end{bmatrix} \begin{bmatrix}
+\alpha_1 \\
+\vdots \\
+\alpha_n
+\end{bmatrix} ~=~ \begin{bmatrix}
+\langle f, \varphi_1 \rangle \\
+\vdots \\
+\langle f, \varphi_n \rangle
+\end{bmatrix}.$$
+Ta sistem enačb imenujemo \textit{Gramov} oz. \textit{normalni sistem}. Numerilno ta sistem rešimo z razcepom Choleskega. Levo matriko imenujemo \textit{Gramova matrika}. Gramova matrika $G = (\langle \varphi_j, \varphi_i \rangle)_{i,j=1}^n$ je \textit{simetrična pozitivno definitna} matrika.
+
+\end{posledica}
+\vspace{0.5cm}
+
+\pagebreak
+
+\begin{algoritem}[Gram-Schmidt]
+
+Vhodni podatki: baza $\{\psi_1, \psi_2, \ldots, \psi_n\}$. \\
+Izhod: Ortonormirana baza $\{\varphi_1, \varphi_2, \ldots, \varphi_n\}$.
+\begin{lstlisting}
+for i = 1:n
+	$\varphi_\texttt{i}$ = $\psi_\texttt{i}$
+end
+for i = 1:n
+	$\varphi_\textit{i}$ = $\frac{\varphi_\texttt{i}}{\|\varphi_\texttt{i}\|_{\texttt{2}}}$
+	for j = i+1:n
+		$\varphi_\texttt{j}$ = $\varphi_\texttt{j}$ - $\langle \varphi_\texttt{j}$, $\varphi_\texttt{i} \rangle \varphi_\texttt{i}$
+	end
+end
+\end{lstlisting}
+
+\end{algoritem}
 \vspace{0.5cm}
 
 % #################################################################################################
