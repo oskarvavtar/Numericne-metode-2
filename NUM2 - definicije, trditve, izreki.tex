@@ -25,8 +25,8 @@
 \theoremstyle{definition}
 \newtheorem{problem}{Problem}[section]
 
-\newtheorem{lema}{Lema}
-\newtheorem{trditev}{Trditev}
+\newtheorem{lema}{Lema}[section]
+\newtheorem{trditev}{Trditev}[section]
 \newtheorem{izrek}{Izrek}
 \newtheorem*{dokaz}{Dokaz}
 \newtheorem*{algoritem}{Algoritem}
@@ -233,6 +233,164 @@ end
 
 \end{algoritem}
 \vspace{0.5cm}
+
+\pagebreak
+
+% #################################################################################################
+
+\section{Interpolacija}
+\vspace{0.5cm}
+
+\begin{problem}
+
+Podane so vrednosti izbrane funkcije $f$ v $n+1$ paroma različnih točkah $x_0, x_1, \ldots, x_n$ na realni osi\footnote{To so \textit{interpolacijske točke}.}, iščemo pa neko preprostejšo funkcijo $g$, ki zadošča pogojem
+$$f(x_i) ~=~ g(x_i), ~~~i = 0, 1, \ldots, n.$$
+
+\end{problem}
+\vspace{0.5cm}
+
+\begin{problem}[Polinomska interpolacija]
+
+Imejmo funkcijo $f \in \C([a, b])$ in zaporedje točk \\$a \leq x_0 < x_1 < \ldots < x_n \leq b$. Iščemo polinom $p = a_0 + a_1 x + \ldots + a_n x^n \in \p_n$, ki zadošča pogojem
+$$p(x_i) ~=~ f(x_i), ~~~i = 0, 1, \ldots, n.$$
+
+\end{problem}
+\vspace{0.5cm}
+
+% *************************************************************************************************
+
+\subsection{Lagrangeeva oblika zapisa interpolacijskega polinoma}
+\vspace{0.5cm}
+
+\begin{definicija}[Lagrangeevi bazni polinomi]
+
+\begin{align*}
+\ell_{0, n}(x) ~&=~ \frac{(x-x_1)(x-x_2)\ldots(x-x_n)}{(x_0-x_1)(x_0-x_2)\ldots(x_0-x_n)}\\
+\ell_{1, n}(x) ~&=~ \frac{(x-x_0)(x-x_2)\ldots(x-x_n)}{(x_1-x_0)(x_1-x_2)\ldots(x_1-x_n)}\\
+&~~\vdots \\
+\ell_{n, n}(x) ~&=~ \frac{(x-x_0)(x-x_1)\ldots(x-x_{n-1})}{(x_n-x_0)(x_n-x_1)\ldots(x_n-x_{n-1})}
+\end{align*}
+$i$-ti Lagrangeev bazni polinom lahko posplošimo kot
+$$\ell_{i, n}(x) ~=~ \prod_{\substack{j=0 \\ j \neq i}}^n \frac{x-x_j}{x_i-x_j}, ~~~i = 0, 1, \ldots, n$$
+Velja:
+$$\ell_{i, n}(x_j) ~=~ \begin{cases}
+1; ~&i=j \\
+0; ~&i \neq j
+\end{cases}$$
+
+\end{definicija}
+\vspace{0.5cm}
+
+\begin{lema}
+
+Polinomi $\ell_{i, n}$, $i = 0, 1, \ldots, n$ so baza za $\p_n$.
+
+\end{lema}
+\vspace{0.5cm}
+
+\begin{trditev}[Lagrangeeva oblika zapisa interpolacijskega polinoma]
+
+$$p(x) ~=~ \sum_{i=0}^n f(x_i) \ell_{i, n}(x)$$
+
+\end{trditev}
+\vspace{0.5cm}
+
+\begin{lema}
+
+Če je $f \in \p_n$, potem je
+$$\sum_{i=0}^n f(x_i) \ell_{i, n}(x) ~=~ f(x).$$
+
+\end{lema}
+\vspace{0.5cm}
+
+\begin{posledica}
+
+Lagrangeevi bazni polinomi tvorijo \textit{particija} oz. \textit{razčlenitev} enote:
+$$\sum_{i=0}^n \ell_{i,n}(x) ~=~ 1.$$
+
+\end{posledica}
+\vspace{0.5cm}
+
+\begin{izrek}
+
+Naj bo $a \leq x_0 < x_1 < \ldots < x_n \leq b$, $f \in \C^{n+1}([a, b])$ in \\$p(x) = \mathlarger{\sum_{i=0}^n f(x_i) \ell_{i, n}(x)}$ interpolacijski polinom za $f$ na točkah $x_0, x_1, \ldots, x_n$. Potem $\forall x \in [a, b]$ obstaka nek $\xi_x \in (a, b)$, da velja
+\begin{align*}
+f(x) - p(x) ~&=~ \frac{f^{(n+1)}(\xi_x)}{(n+1)!} \omega(x), \\
+\omega(x) ~&=~ (x-x_0)(x-x_1)\ldots(x-x_n), ~~~\omega \in \p_{n+1}.
+\end{align*}
+
+\end{izrek}
+\vspace{0.5cm}
+
+\begin{opomba}
+
+Za poljuben $x \in  [a, b]$ torej velja
+$$\|f(x) - p(x)\|_{\infty,~[a, b]} ~\leq~ \frac{1}{(n+1)!} \|\omega(x)\|_{\infty,~[a, b]} \cdot \|f^{(n+1)}(x)\|_{\infty,~[a, b]}$$
+
+\end{opomba}
+\vspace{0.5cm}
+
+% *************************************************************************************************
+
+\subsection{Newtonova oblika zapisa interpolacijskega polinoma}
+\vspace{0.5cm}
+
+\begin{problem}
+
+Za bazo v kateri bomo interpolacijski polinom izrazili, izberemo \textit{prestavljene potence}:
+$$1, ~x-x_0, ~(x-x_0)(x-x_1), ~(x-x_0)(x-x_1)(x-x_2), ~\ldots, ~(x-x_0)(x-x_1)\ldots(x-x_{n-1})$$
+$$p(x) ~=~ \sum_{i=0}^n c_i (x-x_0)(x-x_1)\ldots(x-x_{i-1})$$
+Iščemo $c_i$, $i = 0, 1, \ldots, n$, da bo $p(x_i) = f(x_i)$ $\forall i$.
+
+\end{problem}
+\vspace{0.5cm}
+
+\begin{definicija}
+
+\textit{Deljiva diferenca} $[x_0, x_1, \ldots, x_k]f$ je \textit{vodilni koeficient} interpolacijskega polinoma stopnje $k$\footnote{Koeficient pri potenci $x^k$.}, ki se s funkcijo $f$ ujema v točkah $x_0, x_1, \ldots, x_k$. Sledi
+$$p_l(x) ~=~ p_{k-1}(x) ~+~ [x_0, x_1, \ldots, x_k]f \,(x-x_0)(x-x_1)\ldots(x-x_{k-1}).$$
+
+\end{definicija}
+\vspace{0.5cm}
+
+\begin{trditev}[Newtonova oblika zapisa interpolacijskega polinoma]
+
+$$p(x) ~=~ \sum_{i=0}^n [x_0, x_1, \ldots, x_i]f \,(x-x_0)(x-x_1)\ldots(x-x_{i-1})$$
+
+\end{trditev}
+\vspace{0.5cm}
+
+\begin{izrek}[Rekurzivna formula za deljene diference]
+
+Naj bodo $x_0, x_1, \ldots, x_k$ paroma različne točke na $x$-osi. Tedaj je
+$$[x_0, x_1, \ldots, x_k]f ~=~ \frac{[x_1, x_2, \ldots, x_k]f - [x_0, x_1, \ldots, x_{k-1}]f}{x_k - x_0}.$$
+
+\end{izrek}
+\vspace{0.5cm}
+
+\pagebreak
+\begin{algoritem}[Hornerjev algoritem]
+
+Vhodni podatki: 
+\begin{itemize}
+	\item $x_0, x_1, \ldots, x_n$
+	\item $d_0, x_1, \ldots, d_n$
+	\item $x$
+\end{itemize}
+\begin{lstlisting}
+v$_\texttt{n}$ = d$_\texttt{n}$
+for i = n-1$\,$:$\,$-1$\,$:$\,$0
+    v$_\texttt{i}$ = d$_\texttt{i}$ + (x-x$_\texttt{i}$)$\cdot$v$_{i+1}$
+end
+\end{lstlisting}
+Izhod: $v_0$
+
+\end{algoritem}
+\vspace{0.5cm}
+
+% *************************************************************************************************
+
+\pagebreak
 
 % #################################################################################################
 
