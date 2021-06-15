@@ -18,6 +18,11 @@
 \newcommand{\A}{\mathcal{A}}
 \newcommand{\B}{\mathcal{B}}
 \newcommand{\C}{\mathcal{C}}
+\newcommand{\s}{\mathcal{S}}
+\newcommand{\rr}{\mathcal{R}}
+\newcommand{\F}{\mathcal{F}}
+\newcommand{\OO}{\mathcal{O}}
+\newcommand{\T}{\mathcal{T}}
 
 \theoremstyle{definition}
 \newtheorem{definicija}{Definicija}[section]
@@ -26,13 +31,14 @@
 \newtheorem{problem}{Problem}[section]
 
 \newtheorem{lema}{Lema}[section]
+\newtheorem*{pravilo}{Pravilo}
 \newtheorem{trditev}{Trditev}[section]
-\newtheorem{izrek}{Izrek}
-\newtheorem*{dokaz}{Dokaz}
+\newtheorem{izrek}{Izrek}[section]
 \newtheorem*{algoritem}{Algoritem}
 \newtheorem*{posledica}{Posledica}
 \newtheorem*{opomba}{Opomba}
 \newtheorem*{metoda}{Metoda}
+\newtheorem*{ideja}{Ideja}
 
 \title{Numerične metode 2 - definicije, trditve in izreki}
 \author{Oskar Vavtar \\
@@ -386,6 +392,437 @@ end
 Izhod: $v_0$
 
 \end{algoritem}
+\vspace{0.5cm}
+
+\begin{definicija}
+
+Pravimo, da se polinom $p$ z $f$ ujema v točki $x_i$ \hbox{$(k+1)$-kratno}, če se ujema v vrednosti in v prvih $k$ odvodih:
+$$p(x_i) ~=~ f(x_i), ~~~p'(x_i) ~=~ f'(x_i), ~~~\ldots~~~ p^{(k)}(x_i) ~=~ f^{(k)}(x_i).$$
+Tak polinom $p$ stopnje $k$ je Taylorjev polinom:
+$$p(x) ~=~ f(x_i) + f'(x_i)\,(x-x_i) + \frac{f''(x_i)}{2}(x-x_i)^2 + \ldots + \frac{f^{(k)}(x_i)}{k!}(x-x_i)^k.$$
+Posplošitev rekurzivne formule: recimo\footnote{Vrstni red točk v diferenci ni pomemben.}, da je $x_i \leq x_{i+1} \leq \ldots \leq x_{i+k}$:
+$$[x_i, x_{i+1}, \ldots, x_{i+k}]f ~=~ \begin{cases}
+\frac{f^{(k)}(x_i)}{k!}; ~&x_i = x_{i+1} = \ldots = x_{i+k} \\
+\frac{[x_{i+1}, \ldots, x_{i+k}]f - [x_i, \ldots, x_{i}]}{x_{i+k} - x_i}, ~&x_i \neq x_{i+k}
+\end{cases}$$
+
+\end{definicija}
+\vspace{0.5cm}
+
+% *************************************************************************************************
+
+\pagebreak
+
+% #################################################################################################
+
+\section{Numerično odvajanje}
+\vspace{0.5cm}
+
+\begin{problem}
+
+Iščemo približek za vrednost odvoda funkcije $f$ pri nekem izbranem $x$. Približek bi radi izrazili s kombinacijo vrednosti funkcije $f$ v bližnjih točkah $x_0, x_1, \ldots, x_n$.
+
+\end{problem}
+\vspace{0.5cm}
+
+\begin{metoda}[Ideja za izpeljavo aproksimacijskih formul]
+
+Kot približek za \hbox{odvod} funkcije $f$ v izbranem $x$ vzamemo vrednost odvoda interpolacijskega \hbox{polinoma} (ki se z $f$ ujema v točkah $x_0, x_1, \ldots, x_n$) pri izbranem $x$. Vemo že:
+$$f(x) ~=~ \underbrace{\sum_{i=0}^n f(x_i) \ell_{i, n}(x)}_{p(x)} ~+~ \omega(x)[x_0, x_1, \ldots, x_n, x],f$$
+kjer je
+$$\omega(x) ~=~ \prod_{i=0}^n (x-x_i).$$
+Odvajamo to formulo:
+$$f'(x) ~=~ \underbrace{\sum_{i=0}^n f(x_i) (\ell_{i, n}(x))'}_{\text{aproksimacijska formula}} ~+~ \underbrace{(\omega(x) [x_0, x_1, \ldots, x_n, x] f')'}_{\text{napaka:}~R(f)~\text{ali}~\rr f}$$ 
+
+\end{metoda}
+\vspace{0.5cm}
+
+\begin{opomba}[Odvod deljene diference]
+
+$$\frac{d}{dx}[x_0, x_1, \ldots, x_n, x]f ~=~ [x_0, x_1, \ldots, x_n, x, x]f$$
+
+\end{opomba}
+\vspace{0.5cm}
+
+\begin{trditev}[?]
+\begin{align*}
+f'(x_k) ~&=~ p'(x_k) ~+~ \omega'(x_k)[x_0, x_1, \ldots, x_n, x_k]f ~+~ \underbrace{\omega(x_k)}_{0} [x_0, x_1, \ldots, x_n, x_k, x_k]f \\
+f'(x_k) ~&=~ p'(x_k) ~+~ \omega'(x_k) \frac{f^{(n+1)}(\xi)}{(n+1)!}, ~~~\xi \in (x_0, x_n)
+\end{align*}
+\end{trditev}
+\vspace{0.5cm}
+
+\pagebreak
+
+% #################################################################################################
+
+\section{Numerično integriranje}
+\vspace{0.5cm}
+
+\begin{problem}
+
+Radi bi izračunal približek za integral
+$$\s f ~=~ \int_a^b f(x)\,dx.$$
+Približek bi radi izrazili s kombinacijo vrednosti funkcije $f$ v izbranih točkah iz intervala $[a, b]$.
+\begin{align*}
+\s: \C([a, b]) ~&\rightarrow~ \R \\
+f ~&\mapsto~ \int_a^b f(x)\,dx
+\end{align*}
+Funkcional $\s$ je \textit{linearen}:
+$$\s (\alpha f + \beta g) ~=~ \alpha \s f + \beta \s g, ~~~\alpha, \beta \in \R, ~f, g \in \C([a, b]).$$
+
+\end{problem}
+\vspace{0.5cm}
+
+\begin{metoda}[Ideja za izpeljavo formul]
+
+Namesto funkcije $f$ integriramo interpolacijski polinom za $f$ na točkah $x_0, x_1, \ldots, x_n$ iz intervala $[a, b]$, \\$a \leq x_0 < x_1 < \ldots < x_n \leq b$. Vemo:
+\begin{align*}
+f(x) ~&=~ p(x) ~+~ \omega(x) [x_0, x_1, \ldots, x_n]f \\
+p(x) ~&=~ \sum_{i=0}^n f(x_i) \ell_{i, n}(x) \\ 
+\ell_{i, n}(x) ~&=~ \prod_{\substack{j=0\\ j \neq i}}^n \frac{x-x_j}{x_i-x_j}
+\end{align*}
+Integriramo prvo enačbo in dobimo
+$$\underbrace{\int_a^b f(x)\,dx}_{\s f} ~= \underbrace{\int_a^b p(x)\,dx}_{\text{približek za integral}~\F f} +~ \underbrace{\int_a^b \omega(x) [x_0, x_1, \ldots, x_n, x]f\,dx}_{\text{napaka}~\rr f}$$
+
+\end{metoda}
+\vspace{0.5cm}
+
+\begin{trditev}[Kvadraturna formula oz. integracijsko pravilo]
+
+\begin{align*}
+\s f ~&=~ \F f + \rr f \\
+\F f ~&=~ \int_a^b \sum_{i=0}^n f(x_i) \ell_{i, n}(x)\,dx ~=~ \underbrace{\sum_{i=0}^n f(x_i) \int_a^b \ell_{i, n}(x)\,dx}_{A_i} \\
+\F f ~&=~ \sum_{i=0}^n A_i f(x_i)
+\end{align*}
+
+\begin{itemize}
+	\item $A_i$ \ldots uteži integracijskega pravila
+	\item $x_0, x_1, \ldots, x_n$ \ldots vozli integracijskega pravila
+\end{itemize}
+
+\end{trditev}
+\vspace{0.5cm}
+
+\begin{definicija}
+
+\textit{Red} oziroma \textit{stopnja} integracijskega pravila je enaka $m$, če je pravilo točno za vse polinome stopnje $\leq$ $m$, to je
+$$\rr p ~=~ 0 ~~~\forall p \in \p_m ~~~\text{in}~~~ \rr x^{m+1} ~\neq~ 0.$$
+Glede na izbiro vozlov ločimo:
+\begin{itemize}
+
+	\item \textit{Newton-Cotesova} pravila: \\vozle izberemo ekvidistantno:
+	\begin{align*}
+	h ~&=~ \frac{b-a}{n}, ~~~x_0 ~=~ a \\
+	x_i ~&=~ x_0 + ih, ~~~i ~=~ 0, 1, 2 \ldots, n
+	\end{align*}	
+	Ločimo:
+	\begin{itemize}
+		\item Pravila odprtega tipa (upoštevamo krajišča):
+		$$\int_a^b f(x)\,dx ~=~ \sum_{i=0}^n A_i f(x_i) + \rr f$$
+		\item Pravila zaprtega tipa (ne upoštevamo krajišč):
+		$$\int_a^b f(x)\,dx ~=~ \sum_{i=1}^{n-1} A_i f(x_i) + \rr f$$
+	\end{itemize}
+	
+	\item \textit{Gaussova} pravila: \\
+	vozle in uteži določimo tako, da je pravilo največjega možnega reda
+
+\end{itemize}
+
+\end{definicija}
+\vspace{0.5cm}
+
+\begin{pravilo}[Trapezno pravilo]
+
+Naj velja $n = 1$, $a = x_0$ in $b = x_1 = x_0 + h$. Potem sledi
+$$\int_{x_0}^{x_1} f(x)\,dx ~=~ \frac{h}{2}(f(x_0) + f(x_1)) - \frac{h^3}{2}f''(\xi), ~~~\xi \in [x_0, x_1].$$
+Za \textit{trapezno pravilo} velja 
+$$\rr 1 = 0, ~~~\rr (x-x_0) = 0 ~~~\text{ter}~~~ \rr (x-x_0)^2 = \frac{h^3}{6} \neq 0,$$
+torej je pravilo reda $1$. 
+
+\end{pravilo}
+\vspace{0.5cm}
+
+\begin{pravilo}[Simpsonovo pravilo]
+
+Naj velja $n = 2$, $a = x_0$, $x_1 = x_0 + h$ ter $x_2 = x_0 + 2h = b$, torej $h = \cfrac{b-a}{2}$. Potem sledi
+$$\int_{x_0}^{x_2} f(x)\,dx ~=~ \frac{h}{3} (f(x_0) + 4f(x_1) + f(x_2)) - \frac{h^5}{90} f^{(4)}(\xi), ~~~\xi \in [x_0, x_2],$$ 
+kjer je $f \in \C^4([x_0, x_2])$. \textit{Simpsonovo pravilo} je reda $3$.
+
+\end{pravilo}
+\vspace{0.5cm}
+
+\begin{trditev}[Napaka aritmetike pri Newton-Cotesovih pravilih]
+
+Recimo, da velja $|f(x_i) - \hat{f}(x_i)| < \varepsilon$. Ocena za napako aritmetike:
+$$D_a ~=~ \left| \sum_{i=0}^n A_i f(x_i) - \sum_{i=0}^n A_i \hat{f}(x_i) \right| ~\leq~ \sum_{i=0}^n |A_i| |f(x_i) - \hat{f}(x_i)| ~\leq~ \varepsilon \sum_{i=0}^n |A_i|.$$
+Ker so pravila točna za konstante velja
+$$\int_a^b 1\,dx ~=~ \sum_{i=0}^n A_i \cdot 1 ~\Rightarrow~ \sum_{i=0}^n A_i ~=~ b-a.$$
+Če so vse uteži pozitivne, potem $D_a \leq \varepsilon(b-a)$ in ni numeričnih težav.
+
+\end{trditev}
+\vspace{0.5cm}
+
+% *************************************************************************************************
+
+\subsection{Sestavljena integracijska pravila}
+\vspace{0.5cm}
+
+\begin{ideja}
+
+Interval $[a, b]$ razdelimo na manjše podintervale in na vsakem podintervalu uporabimo integracijsko pravilo nizkega reda in rezultate seštejemo. 
+
+\end{ideja}
+\vspace{0.5cm}
+
+\begin{pravilo}[Sestavljeno trapezno pravilo]
+
+$h = \frac{b-a}{m}$
+$$\int_a^b f(x)\,dx ~=~ \frac{h}{2} \left( f(x_0) + 2 \sum_{i=1}^{m-1} f(x_i) + f(x_m) \right) - \frac{h^2}{12} (b-a) f''(\mu)$$
+
+\end{pravilo}
+\vspace{0.5cm}
+
+\begin{pravilo}[Sestavljeno Simpsonovo pravilo]
+
+$n=2$, $h = \frac{b-a}{2m}$, $x_i = a + ih$, $i = 0, 1, \ldots, 2m$
+$$\int_a^b f(x)\,dx ~=~ \frac{h}{3} \left( f(x_o) + 4 \sum_{i=0}^{m-1} f(x_{2i+1}) + 2 \sum_{i=0}^{m-1} f(x_{2i}) + f(x_{2m}) \right) - \frac{h^4}{180} (b-a) f^{(4)}(\mu)$$
+
+\end{pravilo}
+\vspace{0.5cm}
+
+% *************************************************************************************************
+
+\subsection{Ocena napake in Richardsonova ekstrapolacija}
+\vspace{0.5cm}
+
+\begin{metoda}
+
+Označimo z $F_n$ približek za $I$, ki ga dobimo, o računamo s korakom $h$. Predpostavimo, da velja
+$$I ~=~ F_n + c_0 \cdot h^p + \OO(h^{p+1}),$$
+kjer je $c_0$ konstanta neodvisna od $h$. Z nekaj vragolijami dobimo
+$$I ~=~ F_{\frac{h}{2}} + \underbrace{\frac{F_{\frac{h}{2}} - F_h}{2^p - 1}}_{\text{Ocena za napako približka $F_{\frac{h}{2}}$}} + \OO(h^{p+1}) ~=~ F_{h} + 2^p \underbrace{\frac{F_{\frac{h}{2}} - F_h}{2^p - 1}}_{\text{Ocena za napako približka $F_h$}} + \OO(h^{p+1})$$
+
+\end{metoda}
+\vspace{0.5cm}
+
+% *************************************************************************************************
+
+\subsection{Gaussova pravila}
+\vspace{0.5cm}
+
+\begin{ideja}
+
+Vozle in uteži v integracijskemu pravilo izračunamo tako, da bo pravilo čim višjega reda.
+$$\int_a^b f(x)\,dx ~=~ \sum_{i=0}^n A_i f(x_i) + \rr f, ~~~\text{neznanke}:~ A_i ~\text{in vozli}~ x_i$$
+Če vozle izberemo tako, da bo $\omega \perp \p_n$, potem je red pravila enak $2n+1$. Velja tudi obratno.
+
+\end{ideja}
+\vspace{0.5cm}
+
+\begin{opomba}[Drug način]
+
+Iz baze $\{ 1, x, x^2, \ldots, x^n, x^{n+1} \}$ izračunamo ON bazo polinomov $p_0, p_1, \ldots, p_n, p_{n+1}$. Iz pogoja $\omega \perp \p_n$ vidimo, da za vozle $x_0, x_1, \ldots, x_n$ izberemo ničle polinoma $p_{n+1}$.
+
+\end{opomba}
+\vspace{0.5cm}
+
+\begin{izrek}
+
+Naj bo $\mathlarger{\F f = \sum_{i=0}^n A_i f(x_i)}$ Gaussovo integracijsko pravilo reda $2n+1$. Uteži
+$$A_i ~=~ \int_a^b \ell_{i, n}(x)\,dx$$
+so pozitivne. Za $f \in \C^{2n+2}([a, b])$ je napaka oblike
+$$\rr f ~=~ \frac{f^{(2n+2)}(\xi)}{(2n+2)!} \int_a^b \omega^2(x)\,dx, ~~~\xi \in [a, b].$$
+V integral, ki ga izračunamo, lahko vstavimo še pozitivno utež $\rho(x) > 0$.
+
+\end{izrek}
+\vspace{0.5cm}
+
+% *************************************************************************************************
+
+\pagebreak
+
+% #################################################################################################
+
+\section{Numerično reševanje NDE}
+\vspace{0.5cm}
+
+\begin{problem}[Začetni problem]
+~\\
+Začetni problem reda $1$:
+\begin{align*}
+y' ~&=~ f(x, y), ~~~f: [a, b] \times \R \rightarrow \R \\
+y(a) ~&=~ y_a
+\end{align*}
+Začetni problem reda $p$:
+\begin{align*}
+y^{(p)} ~&=~ f(x, y, y', \ldots, y^{(p-1)}) \\
+y(a) ~&=~ y_a, ~y'(a) ~=~ y_{a, 1}, ~y^2(a) ~=~ y_{a, 2}, ~\ldots, ~y^{(p-1)}(a) ~=~ y_{a, p-1}
+\end{align*}
+
+\end{problem}
+\vspace{0.5cm}
+
+\begin{problem}[Robni primer]
+
+\begin{align*}
+y^{(4)} &+ xy ~=~ 0 \\
+y(a) ~&=~ y_a, ~y'(a) = y_{a, 1} \\
+y(b) ~&=~ y_b, ~y'(b) = y_{b, 1}
+\end{align*}
+
+\end{problem}
+\vspace{0.5cm}
+
+\begin{metoda}[Eksplicitna Eulerjeva metoda]
+
+$$y_{n+1} ~=~ y_n + h f(x_n, y_n), ~~~x_{n+1} = x_n + h$$
+
+\end{metoda}
+\vspace{0.5cm}
+
+\begin{metoda}[Implicitna Eulerjeva metoda]
+
+$$y_{n+1} ~=~ y_n + h f(x_{n+1}, y_{n+1})$$
+
+\begin{lstlisting}
+y$_{\texttt{n+1}}$ = g(y$_{\texttt{n+1}}$)     (g(y$_{\texttt{n+1}}$) = y$_{\texttt{n}}$ + h$\cdot$f(x$_{\texttt{n+1}}$, y$_{\texttt{n+1}}$))
+y$_{\texttt{n+1}}^{\texttt{(0)}}$ = y$_{\texttt{n}}$
+while |y$_{\texttt{n+1}}^{\texttt{(k)}}$ - y$_{\texttt{n+1}}^{\texttt{(k-1)}}$| $\geq$ tol$\cdot$|y$_{\texttt{n+1}}^{\texttt{(k)}}$|
+    y$_{\texttt{n+1}}^{\texttt{(k)}}$ = g(y$_{\texttt{n+1}}^{\texttt{(k)}}$),     k = 1,2,...
+\end{lstlisting}
+
+\end{metoda}
+\vspace{0.5cm}
+
+\begin{metoda}[Trapezna metoda]
+
+$x_n = a + n h$
+$$y_{n+1} ~=~ y_n + \frac{h}{2} (f(x_n, y_n) + f(x_{n+1}, y_{n+1}))$$
+
+\end{metoda}
+\vspace{0.5cm}
+
+% *************************************************************************************************
+
+\subsection{Globalna in lokalna napaka}
+\vspace{0.5cm}
+
+\begin{definicija}
+
+Metoda je \textit{konvergentna}, če za vse DE, ki zadoščajo pogojem eksistenčnega izreka, velja:
+$$\|y - y_n\|_{\infty, [a, b]} \xrightarrow{h \rightarrow 0} 0,$$
+oziroma:
+$$\max_{0 \leq n \leq m} |y(x_n) - y_n| \xrightarrow{h \rightarrow 0 ~\text{oz.}~ m \rightarrow \infty} 0.$$
+
+\end{definicija}
+\vspace{0.5cm}
+
+\begin{definicija}[Globalna napaka]
+
+$$\max_{0 \leq n \leq m} |y(x_n) - y_n|$$
+Globalna točka v točki $x_n$:
+$$|y(x_n) - y_n|$$
+
+\end{definicija}
+\vspace{0.5cm}
+
+\begin{definicija}
+
+Metoda je reda $r$, če velja
+$$\max_{0 \leq n \leq m} |y(x_n) - y_n| ~=~ C \cdot h^r + \OO(h^{r+1}) ~=~ \OO(h^r).$$
+
+\end{definicija}
+\vspace{0.5cm}
+
+\begin{definicija}
+
+\textit{Lokalna napaka} v točki $x_n$ je razlika med točno rešitvijo in njenim numeričnim približkom, ob predpostavki, da se ti dve rešitvi ujemata na vseh prejšnih korakih.
+$$\T_n(n) ~=~ y(x_n) - y_n, ~~~\text{če}~ y(x_k) = y_k ~\forall k < n.$$
+
+\end{definicija}
+\vspace{0.5cm}
+
+% *************************************************************************************************
+
+\subsection{Runge-Kutta metode}
+\vspace{0.5cm}
+
+\begin{metoda}[$s$-stopenjska Runge-Kutta metoda]
+
+Izračunamo $s$ koeficientov:
+\begin{align*}
+k_i ~&=~ h \cdot f(x_i + \alpha_i \cdot h, ~y_n = \sum_{j=1}^s \beta_{ij} k_j), ~~~i = 1, 2, \ldots, s \\
+y_{n+1} ~&=~ y_n + \sum_{i=1}^s \gamma_i \cdot k_i
+\end{align*}
+Pri tem so $\alpha_i, \beta_{ij}, \gamma_i$ koeficienti, ki jih določimo tako, da je metoda čim višjega reda.
+\begin{align*}
+\alpha_i ~&\in~ [0, 1] \\
+\alpha_i ~&=~ \sum_{j=1}^s \beta_{ij}
+\end{align*}
+Da bo R-K metoda reda vsaj $1$, mora biti $\mathlarger{\sum_{i=1}^s \gamma_i = 1}$.
+R-K metode podamo v \textit{Butcherjevi shemi}: \\
+\begin{center}
+\begin{tabular}{c|cccc}
+$\alpha_1$ & $\beta_{11}$ & $\beta_{12}$ & $\ldots$ & $\beta_{1s}$ \\
+$\alpha_2$ & $\beta_{21}$ & $\beta_{22}$ & $\ldots$ & $\beta_{2s}$ \\
+$\vdots$ & $\vdots$ & $\vdots$ & $\vdots$ & $\vdots$ \\ 
+$\alpha_s$ & $\beta_{s1}$ & $\beta_{s2}$ & $\ldots$ & $\beta_{ss}$ \\ \hline
+~ & $\gamma_1$ & $\gamma_2$ & $\ldots$ & $\gamma_s$
+\end{tabular}
+\end{center}
+Če so $\beta_{ij} = 0$ $\forall j \geq i$, je metoda \textit{eksplicitna}. Če so $\beta_{ij} = 0$ $\forall j > i$ in je vsaj en $\beta_{ii} \neq 0$, je metoda \textit{diagonalno implicitna}. Sicer je \textit{implicitna}.
+
+\end{metoda}
+\vspace{0.5cm}
+
+\begin{metoda}[Modificirana Eulerjeva metoda]
+~\\
+\begin{tabular}{c|cc}
+$0$ & $0$ & $0$ \\
+$\frac{1}{2}$ & $\frac{1}{2}$ & $0$ \\[1ex] \hline
+$~$ & $0$ & $1$ 
+\end{tabular} \\
+Lokalna napaka je reda $3$, oz. metoda je reda $2$.
+
+\end{metoda}
+\vspace{0.5cm}
+\begin{metoda}[Heunova metoda]
+~\\
+\begin{tabular}{c|cc}
+$0$ & $0$ & $0$ \\
+$1$ & $1$ & $0$ \\[1ex] \hline
+$~$ & $\frac{1}{2}$ & $\frac{1}{2}$ 
+\end{tabular} \\
+Lokalna napaka je reda $3$.
+
+\end{metoda}
+\vspace{0.5cm}
+
+\begin{metoda}
+~\\
+\begin{tabular}{c|cc}
+$0$ & $0$ & $0$ \\
+$1$ & $\frac{1}{2}$ & $\frac{1}{2}$ \\[1ex] \hline
+$~$ & $\frac{1}{2}$ & $\frac{1}{2}$ 
+\end{tabular} \\
+Lokalna napaka je reda $3$. Metoda je \textit{diagonalno implicitna}.
+
+\end{metoda}
+\vspace{0.5cm}
+
+\begin{metoda}[$4$-stopenjska R-K metoda]
+~\\
+\begin{tabular}{c|cccc}
+$0$ & $0$ & $~$ & $~$ & $~$ \\
+$\frac{1}{2}$ & $\frac{1}{2}$ & $0$ & $~$ & $~$ \\[1ex]
+$\frac{1}{2}$ & $0$ & $\frac{1}{2}$ & $0$ & $~$ \\[1ex] 
+$1$ & $0$ & $0$ & $1$ & $0$ \\ \hline
+~ & $\frac{1}{6}$ & $\frac{2}{6}$ & $\frac{2}{6}$ & $\frac{1}{6}$
+\end{tabular}
+Lokalna napaka je reda $5$. Metoda je reda $4$.
+
+\end{metoda}
 \vspace{0.5cm}
 
 % *************************************************************************************************
