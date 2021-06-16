@@ -65,7 +65,7 @@ Z $X$ označimo (realni) vektorski prostor, katerega elemente želimo aproksimir
 
 \begin{definicija}[Optimalni aproksimacijski problem]
 
-Naj bo $X$ vektorski prostor z normo $\|\bullet\|$, $S \subseteq X$. Za $f \in X$ iščemo $\tilde{f} \in S$, da je 
+Naj bo $X$ vektorski prostor z normo $\|\cdot\|$, $S \subseteq X$. Za $f \in X$ iščemo $\tilde{f} \in S$, da je 
 $$\|f - \tilde{f}\| ~=~ \inf_{s \in S}{\|f - s\|} ~=:~ \dist(f, S).$$
 
 \end{definicija}
@@ -92,10 +92,10 @@ $$\dist_{\infty}(f, \p_n) ~\xrightarrow{n \rightarrow \infty}~ 0.$$
 
 \begin{definicija}[Bernsteinov polinom]
 
-$$\B_n f(x) ~=~ \sum_{i=0}^n f(\frac{i}{n}) \cdot B_i^n(x),$$
+$$\B_n f(x) ~=~ \sum_{i=0}^n f\left(\frac{i}{n}\right) \cdot B_i^n(x),$$
 kjer je $B_i^n$ \textit{Bernsteinov bazni polinom}:
 $$B_i^n(x) ~:=~ \binom{n}{i} x^i (1-x)^{n-1}, ~~~i = 0, 1, \ldots, n$$
-Da se pokazati, da gre $\|f - \B_f\|_{\infty,~[0, 1]} \xrightarrow{n \rightarrow \infty} 0$. Bernsteinov aproksimacijski polinom nam poda en možen način aproksimacije funkcije $f$ (na $[0,1]$).
+Da se pokazati, da gre $\|f - \B_n f\|_{\infty,~[0, 1]} \xrightarrow{n \rightarrow \infty} 0$. Bernsteinov aproksimacijski polinom nam poda en možen način aproksimacije funkcije $f$ (na $[0,1]$).
 
 \end{definicija}
 \vspace{0.5cm}
@@ -103,7 +103,7 @@ Da se pokazati, da gre $\|f - \B_f\|_{\infty,~[0, 1]} \xrightarrow{n \rightarrow
 \begin{definicija}[Bernsteinov aproksimacijski operator]
 ~\\
 $\B_n: \C([a, b]) \rightarrow \p_n$, ~$f \mapsto \B_n f$:
-$$\B_n f(x) ~=~ \sum_{i=0}^n f \left( a + \frac{i}{n} (b-a) \right) \cdot B_i^n(\frac{x-a}{b-a})$$
+$$\B_n f(x) ~=~ \sum_{i=0}^n f \left( a + \frac{i}{n} (b-a) \right) \cdot B_i^n\left(\frac{x-a}{b-a}\right)$$
 $$\|f - \B_n f\|_{\infty, ~[a, b]} ~=~ \max_{x \in [a, b]} |f(x) - \B_n f(x)|$$ 
 
 \end{definicija}
@@ -151,9 +151,9 @@ Vhodni podatki: funkcija $f$, interval $[a, b]$, stopnja $n$, toleranca $\vareps
 Ponavljaj $k = 0, 1, 2, \ldots$
 \begin{enumerate}
 	\item Poišči polinom ${p_k}^* \in \p_n$, ki zadošča pogojem
-	$$f(x_i) - {p_k}^*(x_i) ~=~ (-1)^i m, ~~~ i = 0, 1, \ldots, n+2$$
+	$$f(x_i) - {p_k}^*(x_i) ~=~ (-1)^i m, ~~~ i = 0, 1, \ldots, n+1$$
 	
-	\item Poišči ekstrem residuala $r_l = f - {p_k}^*$, torej poišči $u \in [a, b]$, da bo
+	\item Poišči ekstrem residuala $r_k = f - {p_k}^*$, torej poišči $u \in [a, b]$, da bo
 	$$|r_k(u)| ~=~ \|r_k\|_{\infty,~[a, b]}$$
 	
 	\item Če je $|r_k(u)| - |m| < \varepsilon$, potem končaj in vrni $p^* = {p_k}^*$. 
@@ -180,9 +180,9 @@ Da se dokazati, da zaporedje polinomov, ki ga tvori Remesov postopek konvergira 
 
 \begin{definicija}
 
-Naj bo $X$ vektorski prostor nad $\R$ s skalarnim produktom $\langle \bullet, \bullet \rangle$, s kvadratno normo $\|\bullet\|_2 = \sqrt{\langle \bullet, \bullet \rangle}$. $S \subseteq X$ je končnodimenzionalen podprostor v $X$, definiran kot
+Naj bo $X$ vektorski prostor nad $\R$ s skalarnim produktom $\langle \cdot, \cdot \rangle$, s kvadratno normo $\|\cdot\|_2 = \sqrt{\langle \cdot, \cdot \rangle}$. $S \subseteq X$ je končnodimenzionalen podprostor v $X$, definiran kot
 $$S ~=~ \mathcal{L}\textit{in}\{\varphi_1, \varphi_2, \ldots, \varphi_n\}, ~~~\dim{S} = n.$$
-Za izbran $f \in X$ iščemo $f* \in S$, da velja
+Za izbran $f \in X$ iščemo $f^* \in S$, da velja
 $$\|f - f^*\|_2 ~=~ \min_{s \in S}\|f - s\|_2.$$
 $f^*$ imenujemo \textit{element najboljše aproksimacije po metodi najmanjših kvadratov.}\footnote{\textit{e.n.a. po MNK}}
 
@@ -202,9 +202,9 @@ Iz izreka sledi konstrukcija. Naj bodo $\varphi_1, \varphi_2, \ldots, \varphi_n$
 $$f^* ~=~ \sum_{j=1}^n \alpha_j \varphi_j,$$ 
 $(\alpha_j)_{j=1}^n$ so neznani koeficienti. Veljati mora $f - f^* \perp S$, torej $f - f^* \perp \varphi_i$ $\forall i = 1, 2, \ldots, n$. Na podlagi tega dobimo
 $$\begin{bmatrix}
-\langle \varphi_1, \varphi_2 \rangle & \cdots & \langle \varphi_n, \varphi_1 \rangle \\
+\langle \varphi_1, \varphi_1 \rangle & \cdots & \langle \varphi_n, \varphi_1 \rangle \\
 \vdots & \ddots & \vdots \\
-\langle \varphi_1, \varphi_n \rangle & \cdots & \langle \varphi_n, \varphi \rangle
+\langle \varphi_1, \varphi_n \rangle & \cdots & \langle \varphi_n, \varphi_n \rangle
 \end{bmatrix} \begin{bmatrix}
 \alpha_1 \\
 \vdots \\
@@ -214,7 +214,7 @@ $$\begin{bmatrix}
 \vdots \\
 \langle f, \varphi_n \rangle
 \end{bmatrix}.$$
-Ta sistem enačb imenujemo \textit{Gramov} oz. \textit{normalni sistem}. Numerilno ta sistem rešimo z razcepom Choleskega. Levo matriko imenujemo \textit{Gramova matrika}. Gramova matrika $G = (\langle \varphi_j, \varphi_i \rangle)_{i,j=1}^n$ je \textit{simetrična pozitivno definitna} matrika.
+Ta sistem enačb imenujemo \textit{Gramov} oz. \textit{normalni sistem}. Numerično ta sistem rešimo z razcepom Choleskega. Levo matriko imenujemo \textit{Gramova matrika}. Gramova matrika $G = (\langle \varphi_j, \varphi_i \rangle)_{i,j=1}^n$ je \textit{simetrična pozitivno definitna} matrika.
 
 \end{posledica}
 \vspace{0.5cm}
