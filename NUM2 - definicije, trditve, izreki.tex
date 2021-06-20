@@ -912,4 +912,164 @@ y_{a, p-1}
 
 % #################################################################################################
 
+\section{Numerično računanje lastnih vrednosti}
+\vspace{0.5cm}
+
+% *************************************************************************************************
+
+\subsection{Potenčna metoda}
+\vspace{0.5cm}
+
+\begin{problem}
+
+Za dano matriko $A \in \R^{n \times n}$ iščemo dominantno lastno \hbox{vrednost}\footnote{Največjo po absolutni vrednosti.} in pripradajoč (dominantni) lastni vektor.
+
+\end{problem}
+\vspace{0.5cm}
+
+\begin{algoritem}
+~
+\begin{lstlisting}
+z$_\texttt{0}$ = $\frac{\texttt{z}_\texttt{0}}{\|\texttt{z}_\texttt{0}\|}$
+for k = 0,1,2,...
+$~~~~$z$_\texttt{k+1}$ = $\frac{\texttt{A}\,\texttt{z}_\texttt{k}}{\|\texttt{A}\,\texttt{z}_\texttt{k}\|}$
+\end{lstlisting}
+Dobimo zaporedje vektorjev $z_0, z_1, z_2, \ldots$
+
+\end{algoritem}
+\vspace{0.5cm}
+
+\begin{izrek}
+
+Naj bo $\lambda_1$ \textit{dominantna lastna vrednost} $A$, 
+$$|\lambda_1| ~>~ |\lambda_2| ~\geq~ |\lambda_3| ~\geq~ \ldots ~\geq~ |\lambda_n|.$$
+Potem za poljuben začetni vektor $z_0$, $\|z_0\| = 1$, zaporedje vektorjev $(z_k)_k$, ki jih tvori potenčna metoda, konvergira proti dominantnemu lastnemu \hbox{vektorju}.
+
+\end{izrek}
+\vspace{0.5cm}
+
+\begin{opomba}
+
+Predpostavka $\alpha_1 \neq 0$ je v praksi izpolnjena zaradi zaokrožitvenih napak aritmetike.
+
+\end{opomba}
+\vspace{0.5cm}
+
+\begin{metoda}[Od lastnega vektorja do lastne vrednosti]
+
+Označimo Reyleighov kvocient:
+$$\rho(x, A) ~=~ \frac{x^T A x}{x^T x}$$
+Ko izračunamo $z_k$, moramo izračunati še $\rho_k = \rho(z_k, A) = z_k^T A z_k$. \\Zaustavitveni kriterij: $\|A z_k - \rho_k z_k\|_2 < tol$. \\
+
+\pagebreak
+\noindent Vhodni podatki: $A$, toleranca $\varepsilon$
+\begin{lstlisting}
+z$_\texttt{0}$
+k = 0
+y$_\texttt{1}$ = A$\,$z$_\texttt{0}$
+s$_\texttt{0}$ = z$_\texttt{0}^\texttt{T}\,$y$_\texttt{1}$
+while ($\|$y$_\texttt{k+1}$ - $\rho_\texttt{k}\,$z$_\texttt{k}\|$ > $\varepsilon$) & (k $\leq$ max_koraki)
+$~~~~$k = k+1
+$~~~~$z$_\texttt{k}$ = $\frac{\texttt{y}_\texttt{k}}{\|\texttt{y}_\texttt{k}\|}$
+$~~~~$y$_\texttt{k+1}$ = A$\,$z$_k$
+$~~~~$$\rho_\texttt{k}$ = z$_\texttt{k}^\texttt{T}\,$y$_\texttt{k+1}$
+end
+\end{lstlisting}
+Konvergenca je \textit{linearno}, hitrost je odvisna od razmerja $\left|\frac{\lambda_2}{\lambda_1}\right|$.
+
+\end{metoda}
+\vspace{0.5cm}
+
+% *************************************************************************************************
+
+\subsection{Inverzna iteracija}
+\vspace{0.5cm}
+
+\begin{problem}
+
+Iz danega približka za lastno vrednost bi radi izračunali ``točno'' lastno vrednost in pripadajoč lastni vektor. Naj bo $\sigma$ približek za $\lambda_i$:
+\begin{align*}
+|\sigma - \lambda_i| ~&<~ |\sigma - \lambda_j| ~~~\forall j \neq i \\
+\frac{1}{|\sigma - \lambda_i|} ~&>~ \frac{1}{|\sigma - \lambda_j|} ~~~\forall j \neq i
+\end{align*}
+Naj bo $A = X \Lambda Y^{-1}$, $\Lambda = \text{diag}(\lambda_1, \lambda_2, \ldots, \lambda_n)$, $X = [x_1, x_2, \ldots, x_n]$
+\begin{align*}
+(A - \sigma I)^{-1} ~&=~ (X \Lambda X^{-1} - \sigma X X^{-1})^{-1} ~=~ (X(\Lambda - \sigma I)X^{-1})^{-1} ~= \\
+~&=~ (X^{-1})^{-1} (\Lambda - \sigma I)^{-1} X^{-1} ~=~ X \begin{bmatrix}
+\frac{1}{\lambda_1 - \sigma} & ~ & ~ \\
+~ & \ddots & ~ \\
+~ & ~ & \frac{1}{\lambda_n - \sigma}
+\end{bmatrix} X^{-1}
+\end{align*}
+$\frac{1}{\lambda_i - \sigma}$ je dominantna lastna vrednost matrike $(A - \sigma I)^{-1}$, pripadajoč lastni vektor pa je kar $x_i$.
+
+\end{problem}
+\vspace{0.5cm}
+
+\pagebreak
+\begin{algoritem}
+
+Vhodni podatki: $A$, približek  $\sigma$
+\begin{lstlisting}
+z$_\texttt{0}$ = $\frac{\texttt{z}_\texttt{0}}{\|\texttt{z}_\texttt{0}\|}$
+for k = 0,1,2,...
+$~~~~$resi sistem (A - $\sigma$I)$\,$y$_\texttt{k+1}$ = z$_\texttt{k}$
+$~~~~$z$_\texttt{k+1}$ = $\frac{\texttt{y}_\texttt{k+1}}{\|\texttt{y}_\texttt{k+1}\|}$
+\end{lstlisting}
+
+\end{algoritem}
+\vspace{0.5cm}
+
+% *************************************************************************************************
+
+\subsection{QR iteracija}
+\vspace{0.5cm}
+
+\begin{algoritem}[Osnovna verzija]
+
+Vhodni podatek: $A$
+\begin{lstlisting}
+A$_\texttt{0}$ = A
+for k = 0,1,2,...
+$~~~~$izracunaj QR razcep matrike A$_\texttt{k}$ = Q$_\texttt{k}\,$R$_\texttt{k}$
+$~~~~$A$_\texttt{k+1}$ = R$_\texttt{k}\,$Q$_\texttt{k}$
+end
+\end{lstlisting}
+Dobimo zaporedje matrik $A_0, A_1, A_2, \ldots$
+$$A_{k+1} ~=~ R_k Q_k ~=~ Q_k^T A_k Q_k ~=~ \ldots ~=~ Q_k^T Q_{k-1}^T \ldots Q_0^T A_0 Q_0 Q_1 \ldots Q_k$$
+
+\end{algoritem}
+\vspace{0.5cm}
+
+\begin{izrek}
+
+Naj za lastne vrednosti $A \in \R^{n \times n}$ velja $|\lambda_1| > \ldots > |\lambda_n|$. Potem zaporedje matrik, ki ga tvori QR iteracija konvergira proti zgornje trikotni matriki iz Schurovega razcepa. Zaustavitveni kriterij:
+$$\max_{1 \leq j < i \leq n}{|A_k(i, j)|} ~<~ \varepsilon.$$
+
+\end{izrek}
+\vspace{0.5cm}
+
+\begin{algoritem}[Premiki]
+
+Vhodni podatki: zgornje Hessova matrika $H$
+\begin{lstlisting}
+A$_\texttt{0}$ = H
+for k = 0,1,2,...
+$~~~~$izberi premik $\sigma_\texttt{k}$
+$~~~~$izracunaj QR razcep matrike A$_\texttt{k}$ - $\sigma_\texttt{k}\,$I = Q$_\texttt{k}\,$R$_\texttt{k}$
+$~~~~$A$_\texttt{k+1}$ = R$_\texttt{k}\,$Q$_\texttt{k}$ + $\sigma_\texttt{k}\,$I
+end
+\end{lstlisting}
+
+$$A_{k+1} ~=~ R_k Q_k + \sigma_k I ~=~ Q_k^T(A_k - \sigma_k I)Q_k + \sigma_k I ~=~ Q_k^T A_k Q_k$$
+
+\end{algoritem}
+\vspace{0.5cm}
+
+% *************************************************************************************************
+
+\pagebreak
+
+% #################################################################################################
+
 \end{document}
